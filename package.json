@@ -8,12 +8,12 @@
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "prepare": "husky",
-    "lint:stage":"lint-staged"
+    "lint:stage": "lint-staged",
+    "precommit": "pnpm run lint:stage && pnpm run lint"
   },
   "lint-staged": {
-    "*.{ts,tsx,json,md}": [
-      "prettier --write",
-      "eslint --fix"
+    "*.{ts,tsx,js,jsx,json,md}": [
+      "prettier --write"
     ]
   },
   "devDependencies": {
