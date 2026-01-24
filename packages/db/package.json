@@ -2,13 +2,17 @@
   "name": "@workspace/db",
   "version": "1.0.0",
   "description": "",
-  "scripts": {
-    "build": "tsc"
-    },
   "keywords": [],
+  "type": "module",
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.4.1",
+  "scripts": {
+    "build": "tsc",
+    "db:generate": "pnpm dlx prisma generate",
+    "db:migrate": "pnpm dlx prism migrate ",
+    "dp:deploy": "pnpm dlx prisma migrate deploy"
+  },
   "devDependencies": {
     "@types/node": "^25.0.9",
     "@types/pg": "^8.16.0",
