@@ -1,23 +1,16 @@
+import { headers } from 'next/headers';
 import { auth } from '@workspace/auth';
 import { redirect } from 'next/navigation';
 
-const getServerSession = async () => {
+export const authRequire = async () => {
   try {
-    const session = await auth.api.getSession();
-    return session;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+    console.log(session);
 
-const authRequire = async () => {
-  try {
-    const session = await getServerSession();
     if (!session) redirect('/login');
   } catch (error) {
-    redirect('/login');
-    console.error(error);
+    console.log(error);
   }
 };
-export { authRequire, getServerSession };

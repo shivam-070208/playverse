@@ -9,9 +9,9 @@
   "packageManager": "pnpm@10.4.1",
   "scripts": {
     "build": "tsc",
-    "db:generate": "pnpm dlx prisma generate",
-    "db:migrate": "pnpm dlx prism migrate ",
-    "dp:deploy": "pnpm dlx prisma migrate deploy"
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "dp:deploy": "prisma migrate deploy"
   },
   "devDependencies": {
     "@types/node": "^25.0.9",

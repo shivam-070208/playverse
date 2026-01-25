@@ -59,11 +59,13 @@ const SignupForm = () => {
 
   const onSubmit = async (values: SignupFormValues) => {
     try {
-      await authClient.signUp.email({
+      const { error } = await authClient.signUp.email({
         email: values.email,
         name: values.name,
         password: values.password,
+        callbackURL: '/',
       });
+      if (error) return toast.error(error?.message || 'internal server error');
       toast.success('Account created successfully! Please check your email for verification.');
     } catch (error) {
       toast.error('Something went wrong, please try again later.');

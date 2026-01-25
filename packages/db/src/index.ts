@@ -4,7 +4,6 @@ import { PrismaClient } from '@prisma/client';
 import { Pool } from 'pg';
 
 const connectionString = process.env.DATABASE_URL;
-
 declare global {
   var prisma: PrismaClient | undefined;
 }

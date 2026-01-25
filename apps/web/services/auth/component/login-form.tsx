@@ -38,10 +38,12 @@ const LoginForm = () => {
 
   const onSubmit = async (values: LoginFormValues) => {
     try {
-      await authClient.signIn.email({
+      const { error } = await authClient.signIn.email({
         ...values,
+        callbackURL: '/',
       });
-      toast.success('Logged in successfully!');
+      if (error) return toast.error(error?.message || 'internal server error');
+      toast.success('Account created successfully! Please check your email for verification.');
     } catch (eroor) {
       toast.error('Something Went Wrong, Please Try again Later');
     }
