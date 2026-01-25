@@ -11,7 +11,8 @@ const isAuthorize = async (req: Request, res: Response, next: NextFunction) => {
     (req as unknown as Record<string, unknown>).session = session;
     next();
   } catch (error) {
-    res.status(500).json({ message: error instanceof Error ? error.message : String(error) });
+    console.error('Auth middleware error', error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 };
 
