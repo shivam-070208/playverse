@@ -19,6 +19,7 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { authClient } from '@/lib/auth-client';
+import { GoogleAuthButton } from './google-auth-button';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -44,7 +45,8 @@ const LoginForm = () => {
       });
       if (error) return toast.error(error?.message || 'internal server error');
       toast.success('Account created successfully! Please check your email for verification.');
-    } catch (eroor) {
+    } catch (error) {
+      console.log(error);
       toast.error('Something Went Wrong, Please Try again Later');
     }
   };
@@ -93,9 +95,10 @@ const LoginForm = () => {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
+              <Button disabled={form.formState.isSubmitting} type="submit" className="w-full">
                 Log In
               </Button>
+              <GoogleAuthButton disabled={form.formState.isSubmitting} />
               <div className="text-center mt-4">
                 <span className="text-sm text-muted-foreground">
                   Don&apos;t have an account?{' '}

@@ -19,6 +19,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { authClient } from '@/lib/auth-client';
 import Link from 'next/link';
+import { GoogleAuthButton } from './google-auth-button';
 
 const signupSchema = z
   .object({
@@ -68,6 +69,7 @@ const SignupForm = () => {
       if (error) return toast.error(error?.message || 'internal server error');
       toast.success('Account created successfully! Please check your email for verification.');
     } catch (error) {
+      console.log(error);
       toast.error('Something went wrong, please try again later.');
     }
   };
@@ -143,9 +145,10 @@ const SignupForm = () => {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
+              <Button disabled={form.formState.isSubmitting} type="submit" className="w-full">
                 Sign Up
               </Button>
+              <GoogleAuthButton disabled={form.formState.isSubmitting} />
               <div className="text-center mt-4">
                 <span className="text-sm text-muted-foreground">
                   have an account?{' '}

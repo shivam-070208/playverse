@@ -1,16 +1,23 @@
+import { authClient } from '@/lib/auth-client';
 import { headers } from 'next/headers';
-import { auth } from '@workspace/auth';
 import { redirect } from 'next/navigation';
 
-export const authRequire = async () => {
-  try {
-    const session = await auth.api.getSession({
+const getSession = async () => {
+  const session = await authClient.getSession({
+    fetchOptions: {
       headers: await headers(),
-    });
-    console.log(session);
+    },
+  });
+  return session;
+};
+const authRequire = async () => {
+  try {
+    const session = await getSession();
 
-    if (!session) redirect('/login');
+    if (!(session && session?.data?.user)) redirect('/login');
   } catch (error) {
-    console.log(error);
+    console.log(typeof error);
   }
 };
+
+export { authRequire, getSession };

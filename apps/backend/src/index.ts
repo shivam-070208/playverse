@@ -3,10 +3,9 @@ import express from 'express';
 import cors from 'cors';
 import { toNodeHandler } from 'better-auth/node';
 import { auth } from '@workspace/auth';
+import { ALLLOWED_ORIGINS, PORT } from './configuration/env.configuration';
 // Variable declaration
 const app = express();
-const PORT = process.env.PORT || 3001;
-const ALLLOWED_ORIGINS = process.env.ALLOWED_ORIGINS?.split(',') || [];
 
 // Middlewares
 app.use(
