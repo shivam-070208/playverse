@@ -13,7 +13,6 @@ const getSession = async () => {
 const authRequire = async () => {
   try {
     const session = await getSession();
-
     if (!(session && session?.data?.user)) redirect('/login');
   } catch (error) {
     console.log(typeof error);
