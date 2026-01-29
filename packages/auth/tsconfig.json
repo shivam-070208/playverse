@@ -1,9 +1,18 @@
 {
-    "extends":"@workspace/typescript-config/base.json",
-    "compilerOptions":{
-        "baseUrl":".",
-        "outDir":"./dist",
-    },
-    "include":["./"],
-    "exclude":["node_modules","dist"]
+  "extends": "@workspace/typescript-config/base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "module": "ESNext",
+    "target": "ES2020",
+    "moduleResolution": "Bundler",
+    "rootDir": "./",
+    "composite": true,
+    "paths": {
+      "@/*": ["src/*"],
+      "@types/*": ["types/*"]
+    }
+  },
+  "include": ["./"],
+  "exclude": ["node_modules", "dist"]
 }

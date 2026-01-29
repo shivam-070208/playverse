@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import { isAuthorize } from 'src/middlewares/auth.middleware';
+import { isAuthorize } from '@/middlewares/auth.middleware';
 
 const userRouter: Router = express.Router();
 
