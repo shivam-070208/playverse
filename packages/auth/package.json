@@ -23,8 +23,8 @@
       "import": "./dist/index.js"
     },
     "./types/*": {
-      "types": "./types/*.ts",
-      "default": "./types/*.ts"
+      "types": "./types/index.d.ts",
+      "default": "./types/index.ts"
     }
   },
   "types": "./dist/index.d.ts",

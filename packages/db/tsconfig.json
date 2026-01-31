@@ -7,6 +7,10 @@
     "target": "ES2020",
     "moduleResolution": "Bundler",
     "declaration": true,
-    "emitDeclarationOnly": false
+    "emitDeclarationOnly": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   }
 }

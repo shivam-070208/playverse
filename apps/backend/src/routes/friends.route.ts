@@ -5,6 +5,7 @@ import {
   getReceivedRequests,
   getSentRequestsController,
   rejectFriendRequestController,
+  removeFriendController,
   sendFriendRequestController,
 } from '@/controllers/friends/friends.controller';
 import express from 'express';
@@ -30,6 +31,6 @@ friendsRouter.post('/request/accept/:requestId', acceptFriendRequestController);
 friendsRouter.post('/request/rejects/:requestId', rejectFriendRequestController);
 
 //! DELETE Request
-friendsRouter.delete('/remove/:friendId');
+friendsRouter.delete('/remove/:friendId', removeFriendController);
 
 export default friendsRouter;

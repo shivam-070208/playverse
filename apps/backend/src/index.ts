@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { toNodeHandler } from 'better-auth/node';
 import { auth } from '@workspace/auth';
-import friendsRouter from './routes/friends.route';
+import friendsRouter from '@/routes/friends.route';
 import { ALLOWED_ORIGINS, PORT } from '@/configuration/env.configuration';
 // Variable declaration
 const app = express();
