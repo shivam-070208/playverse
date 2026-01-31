@@ -2,8 +2,8 @@ import { RequestWithSession } from '@/types/extended-request';
 import { db } from '@workspace/db';
 import type { Request, Response } from 'express';
 import { asyncHandler } from '@/utils/async-handler';
-
-// GET Controller
+import { StatusCodes } from '@workspace/config';
+//* GET Controller
 
 const getAllFriendController = asyncHandler(async (req: Request, res: Response) => {
   const userId = (req as RequestWithSession).session.user.id;
@@ -28,7 +28,7 @@ const getAllFriendController = asyncHandler(async (req: Request, res: Response) 
     skip: Number(page) * Number(limit),
     take: Number(limit),
   });
-  return res.status(200).json({ Friends });
+  return res.status(StatusCodes.HTTP_200_OK).json({ Friends });
 });
 const getSentRequestsController = asyncHandler(async (req: Request, res: Response) => {
   const { searchQuery = '' } = req.query;
@@ -63,7 +63,7 @@ const getSentRequestsController = asyncHandler(async (req: Request, res: Respons
       },
     },
   });
-  return res.status(200).json({ SentRequests });
+  return res.status(StatusCodes.HTTP_200_OK).json({ SentRequests });
 });
 
 const getReceivedRequests = asyncHandler(async (req: Request, res: Response) => {
@@ -97,7 +97,7 @@ const getReceivedRequests = asyncHandler(async (req: Request, res: Response) => 
       },
     },
   });
-  return res.status(200).json({ ReceivedRequests });
+  return res.status(StatusCodes.HTTP_200_OK).json({ ReceivedRequests });
 });
 
 const getAvailableUsers = asyncHandler(async (req: Request, res: Response) => {
@@ -129,15 +129,18 @@ const getAvailableUsers = asyncHandler(async (req: Request, res: Response) => {
     },
   });
 
-  res.status(200).json({ AvailableUsers });
+  res.status(StatusCodes.HTTP_200_OK).json({ AvailableUsers });
 });
 
+//? POST CONTROLLER
 const sendFriendRequestController = asyncHandler(async (req: Request, res: Response) => {
   const fromUserId = (req as RequestWithSession).session.user.id;
   const userId = req.params.userId as string;
 
   if (fromUserId === userId) {
-    return res.status(400).json({ message: 'You cannot send a friend request to yourself.' });
+    return res
+      .status(StatusCodes.HTTP_400_BAD_REQUEST)
+      .json({ message: 'You cannot send a friend request to yourself.' });
   }
 
   const userExists = await db.user.findUnique({
@@ -147,7 +150,7 @@ const sendFriendRequestController = asyncHandler(async (req: Request, res: Respo
   });
 
   if (!userExists) {
-    return res.status(404).json({ message: 'User not found.' });
+    return res.status(StatusCodes.HTTP_404_NOT_FOUND).json({ message: 'User not found.' });
   }
 
   const existingRequest = await db.friendRequest.findFirst({
@@ -158,7 +161,9 @@ const sendFriendRequestController = asyncHandler(async (req: Request, res: Respo
   });
 
   if (existingRequest) {
-    return res.status(409).json({ message: 'Friend request already sent.' });
+    return res
+      .status(StatusCodes.HTTP_409_CONFLICT)
+      .json({ message: 'Friend request already sent.' });
   }
 
   const request = await db.friendRequest.create({
@@ -168,28 +173,37 @@ const sendFriendRequestController = asyncHandler(async (req: Request, res: Respo
     },
   });
 
-  return res.status(201).json({ request });
+  return res.status(StatusCodes.HTTP_201_CREATED).json({ request });
 });
 
 const acceptFriendRequestController = asyncHandler(async (req: Request, res: Response) => {
   const toUserId = (req as RequestWithSession).session.user.id;
   const requestId = req.params.requestId as string;
-  const friendRequest = await db.friendRequest.findFirst({
-    where: { id: requestId, toUserId },
+  const result = await db.$transaction(async (prisma) => {
+    const friendRequest = await prisma.friendRequest.findFirst({
+      where: { id: requestId, toUserId },
+    });
+    if (!friendRequest) {
+      return { notFound: true };
+    }
+    await prisma.friendship.createMany({
+      data: [
+        { userId: toUserId, friendId: friendRequest.fromUserId },
+        { userId: friendRequest.fromUserId, friendId: toUserId },
+      ],
+    });
+    await prisma.friendRequest.delete({
+      where: { id: requestId },
+    });
+    return { notFound: false };
   });
-  if (!friendRequest) {
-    return res.status(404).json({ message: 'Friend request not found.' });
+
+  if (result.notFound) {
+    return res
+      .status(StatusCodes.HTTP_404_NOT_FOUND)
+      .json({ message: 'Friend request not found.' });
   }
-  await db.friendship.createMany({
-    data: [
-      { userId: toUserId, friendId: friendRequest.fromUserId },
-      { userId: friendRequest.fromUserId, friendId: toUserId },
-    ],
-  });
-  await db.friendRequest.delete({
-    where: { id: requestId },
-  });
-  return res.status(200).json({ message: 'Friend request accepted.' });
+  return res.status(StatusCodes.HTTP_200_OK).json({ message: 'Friend request accepted.' });
 });
 
 const rejectFriendRequestController = asyncHandler(async (req: Request, res: Response) => {
@@ -199,14 +213,17 @@ const rejectFriendRequestController = asyncHandler(async (req: Request, res: Res
     where: { id: requestId, toUserId },
   });
   if (!friendRequest) {
-    return res.status(404).json({ message: 'Friend request not found.' });
+    return res
+      .status(StatusCodes.HTTP_404_NOT_FOUND)
+      .json({ message: 'Friend request not found.' });
   }
   await db.friendRequest.delete({
     where: { id: requestId },
   });
-  return res.status(200).json({ message: 'Friend request rejected.' });
+  return res.status(StatusCodes.HTTP_200_OK).json({ message: 'Friend request rejected.' });
 });
 
+//! DELETE CONTROLLER
 const removeFriendController = asyncHandler(async (req: Request, res: Response) => {
   const userId = (req as RequestWithSession).session.user.id;
   const friendId = req.params.friendId as string;
@@ -218,7 +235,7 @@ const removeFriendController = asyncHandler(async (req: Request, res: Response) 
       ],
     },
   });
-  return res.status(200).json({ message: 'Friend removed.' });
+  return res.status(StatusCodes.HTTP_200_OK).json({ message: 'Friend removed.' });
 });
 
 export {

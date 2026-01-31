@@ -1,19 +1,22 @@
 import { auth } from '@workspace/auth';
 import { Request, Response, NextFunction } from 'express';
 import { RequestWithSession } from '@/types/extended-request';
+import { StatusCodes } from '@workspace/config';
 const isAuthorize = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const session = await auth.api.getSession({
       headers: req.headers as Record<string, string>,
     });
     if (!session) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      return res.status(StatusCodes.HTTP_401_UNAUTHORIZED).json({ message: 'Unauthorized' });
     }
     (req as RequestWithSession).session = session;
     next();
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    res
+      .status(StatusCodes.HTTP_500_INTERNAL_SERVER_ERROR)
+      .json({ message: 'Internal Server Error' });
   }
 };
 
@@ -29,12 +32,14 @@ function isEmailVerified(req: Request, res: Response, next: NextFunction) {
     const session = (req as RequestWithSession).session;
 
     if (!session || !session.user || !session.user.emailVerified) {
-      return res.status(403).json({ message: 'Email not verified' });
+      return res.status(StatusCodes.HTTP_403_FORBIDDEN).json({ message: 'Email not verified' });
     }
     next();
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    res
+      .status(StatusCodes.HTTP_500_INTERNAL_SERVER_ERROR)
+      .json({ message: 'Internal Server Error' });
   }
 }
 export { isAuthorize, isEmailVerified };
