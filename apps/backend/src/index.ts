@@ -3,7 +3,8 @@ import express from 'express';
 import cors from 'cors';
 import { toNodeHandler } from 'better-auth/node';
 import { auth } from '@workspace/auth';
-import { ALLLOWED_ORIGINS, PORT } from './configuration/env.configuration';
+import friendsRouter from '@/routes/friends.route';
+import { ALLOWED_ORIGINS, PORT } from '@/configuration/env.configuration';
 // Variable declaration
 const app = express();
 
@@ -12,7 +13,7 @@ app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-      if (ALLLOWED_ORIGINS.includes(origin)) {
+      if (ALLOWED_ORIGINS.includes(origin)) {
         return callback(null, true);
       } else {
         return callback(new Error('Not allowed by CORS'));
@@ -22,7 +23,10 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization'],
   }),
 );
+
+// Better-Auth Api configuration
 app.all('/api/auth/{*any}', toNodeHandler(auth));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -30,6 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', (req, res) => {
   res.send('Hello World');
 });
+app.use('/friends', friendsRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

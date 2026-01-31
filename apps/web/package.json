@@ -13,11 +13,9 @@
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@prisma/adapter-pg": "^7.2.0",
-    "@prisma/client": "^7.2.0",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-slot": "^1.2.4",
-    "@workspace/auth": "workspace:*",
-    "@workspace/db": "workspace:*",
+    "@tanstack/react-query": "^5.90.20",
     "@workspace/ui": "workspace:*",
     "axios": "^1.13.3",
     "better-auth": "^1.4.15",
