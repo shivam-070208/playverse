@@ -26,6 +26,10 @@
     "pg": "^8.17.1"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "require": "./dist/src/index.js",
+      "import": "./dist/src/index.js"
+    }
   }
 }
