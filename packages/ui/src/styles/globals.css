@@ -165,6 +165,12 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+
+
+  /*
+   local font
+  */
+  --font-ryzes:var(--font-local-ryzes);
 }
 @layer base {
   * {

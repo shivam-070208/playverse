@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import * as SeparatorPrimitive from '@radix-ui/react-separator';
+import { Separator as SeparatorPrimitive } from 'radix-ui';
 
 import { cn } from '@workspace/ui/lib/utils';
 
@@ -24,17 +24,5 @@ function Separator({
     />
   );
 }
-function GradientSeparator({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      data-slot="separator"
-      className={cn(
-        ' h-1 w-full bg-gradient-to-r from-transparent via-muted-foreground to-transparent',
-        className,
-      )}
-      {...props}
-    />
-  );
-}
 
-export { Separator, GradientSeparator };
+export { Separator };

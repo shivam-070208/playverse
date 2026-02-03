@@ -3,11 +3,13 @@ import { authClient } from '@/lib/auth-client';
 
 const googleAuth = async () => {
   try {
-    const response = await authClient.signIn.social({
+    const { data, error } = await authClient.signIn.social({
       provider: 'google',
       callbackURL: BASE_URL,
     });
-    return response;
+    if (error) throw new Error(error.message);
+    console.log(error);
+    return data;
   } catch (error) {
     console.error('Google authentication failed:', error);
     throw new Error('Google authentication failed');
