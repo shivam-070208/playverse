@@ -1,4 +1,7 @@
 import Lobby from '@/services/game/lobby/component/main';
-export default async function Page() {
+// * Lobby Screen
+const page = () => {
   return <Lobby />;
-}
+};
+
+export default page;
