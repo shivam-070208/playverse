@@ -22,7 +22,7 @@ const LobbyFooter = () => {
           {chatPresets.map((preset, i) => (
             <Button
               type="button"
-              key={preset.label}
+              key={`${preset.label + i}`}
               size="sm"
               variant="ghost"
               className="gap-1 rounded-none"

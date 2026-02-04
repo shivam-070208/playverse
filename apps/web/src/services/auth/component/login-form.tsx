@@ -1,5 +1,5 @@
 'use client';
-import { Container } from '@/src/components/common/container';
+import { Container } from '@/components/common/container';
 import {
   Card,
   CardDescription,
@@ -18,7 +18,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { authClient } from '@/src/lib/auth-client';
+import { authClient } from '@/lib/auth-client';
 import { GoogleAuthButton } from './google-auth-button';
 
 const loginSchema = z.object({

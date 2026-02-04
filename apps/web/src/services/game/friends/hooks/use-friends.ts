@@ -1,14 +1,17 @@
 import { axiosInstance } from '@/lib/axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-export const useFriends = (searchQuery?: string) =>
+export const useFriends = (options?: { page?: number; limit?: number }) =>
   useQuery({
-    queryKey: ['friends', searchQuery],
+    queryKey: ['friends', options?.page, options?.limit],
     queryFn: async () => {
-      const response = await axiosInstance.get('/friends/get-all', {
-        params: searchQuery ? { searchQuery } : undefined,
+      const response = await axiosInstance.get('/friends', {
+        params: {
+          ...(options?.page != null ? { page: options.page } : {}),
+          ...(options?.limit != null ? { limit: options.limit } : {}),
+        },
       });
-      return response.data;
+      return response.data.Friends;
     },
   });
 
@@ -16,10 +19,10 @@ export const useReceivedFriendRequests = (searchQuery?: string) =>
   useQuery({
     queryKey: ['received-friend-requests', searchQuery],
     queryFn: async () => {
-      const response = await axiosInstance.get('/friends/received-requests', {
+      const response = await axiosInstance.get('/friends/requests/received', {
         params: searchQuery ? { searchQuery } : undefined,
       });
-      return response.data;
+      return response.data.ReceivedRequests;
     },
   });
 
@@ -27,10 +30,10 @@ export const useSentFriendRequests = (searchQuery?: string) =>
   useQuery({
     queryKey: ['sent-friend-requests', searchQuery],
     queryFn: async () => {
-      const response = await axiosInstance.get('/friends/get-sent-requests', {
+      const response = await axiosInstance.get('/friends/requests/sent', {
         params: searchQuery ? { searchQuery } : undefined,
       });
-      return response.data;
+      return response.data.SentRequests;
     },
   });
 
@@ -42,14 +45,14 @@ export const useAvailableUsers = ({
   useQuery({
     queryKey: ['available-users', searchQuery, page, limit],
     queryFn: async () => {
-      const response = await axiosInstance.get('/friends/available-users', {
+      const response = await axiosInstance.get('/friends/available', {
         params: {
           ...(searchQuery ? { searchQuery } : {}),
           page,
           limit,
         },
       });
-      return response.data;
+      return response.data.AvailableUsers;
     },
   });
 
@@ -57,8 +60,8 @@ export const useSendFriendRequest = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (userId: string) => {
-      const response = await axiosInstance.post(`/friends/send-request/${userId}`);
-      return response.data;
+      const response = await axiosInstance.post(`/friends/request/send/${userId}`);
+      return response.data.request;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['available-users'] });
@@ -71,8 +74,8 @@ export const useAcceptFriendRequest = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (requestId: string) => {
-      const response = await axiosInstance.post(`/friends/accept-request/${requestId}`);
-      return response.data;
+      const response = await axiosInstance.post(`/friends/request/accept/${requestId}`);
+      return response.data.message;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['friends'] });
@@ -85,8 +88,8 @@ export const useRejectFriendRequest = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (requestId: string) => {
-      const response = await axiosInstance.post(`/friends/reject-request/${requestId}`);
-      return response.data;
+      const response = await axiosInstance.post(`/friends/request/rejects/${requestId}`);
+      return response.data.message;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['received-friend-requests'] });
@@ -99,7 +102,7 @@ export const useRemoveFriend = () => {
   return useMutation({
     mutationFn: async (friendId: string) => {
       const response = await axiosInstance.delete(`/friends/remove/${friendId}`);
-      return response.data;
+      return response.data.message;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['friends'] });

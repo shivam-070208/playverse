@@ -4,7 +4,7 @@ import '@workspace/ui/globals.css';
 import { ToastProvider } from '@/components/providers/toast-provider';
 import { QueryProvider } from '@/components/providers/query-provider';
 import { ThemeProvider } from '@/components/providers/theme-provider';
-
+import type { Metadata } from 'next';
 const fontSans = Geist({
   subsets: ['latin'],
   variable: '--font-sans',
@@ -24,6 +24,15 @@ const fontRyzes = localFont({
   ],
   variable: '--font-local-ryzes',
 });
+
+export const metadata: Metadata = {
+  title: {
+    default: 'Play Verse',
+    template: '%s - Play Verse',
+  },
+  description: 'Make your team productive with fun',
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{

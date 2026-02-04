@@ -32,7 +32,8 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', (req, res) => {
   res.send('Hello World');
 });
-app.use('/friends', friendsRouter);
+
+app.use('/api/v1/friends', friendsRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

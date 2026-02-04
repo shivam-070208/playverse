@@ -24,5 +24,16 @@ function Separator({
     />
   );
 }
-
-export { Separator };
+function GradientSeparator({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      data-slot="separator"
+      className={cn(
+        ' h-1 w-full bg-gradient-to-r from-transparent via-muted-foreground to-transparent',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+export { Separator, GradientSeparator };

@@ -1,7 +1,9 @@
 //* Friends screen for corresonding user
 
+import Friends from '@/services/game/friends/components/main';
+
 const page = () => {
-  return <p>Friends page</p>;
+  return <Friends />;
 };
 
 export default page;
