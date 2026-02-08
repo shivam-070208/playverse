@@ -179,7 +179,7 @@ const sendFriendRequestController = asyncHandler(async (req: Request, res: Respo
 const acceptFriendRequestController = asyncHandler(async (req: Request, res: Response) => {
   const toUserId = (req as RequestWithSession).session.user.id;
   const requestId = req.params.requestId as string;
-  const result = await db.$transaction(async (prisma) => {
+  const result = await db.$transaction(async (prisma: typeof db) => {
     const friendRequest = await prisma.friendRequest.findFirst({
       where: { id: requestId, toUserId },
     });
