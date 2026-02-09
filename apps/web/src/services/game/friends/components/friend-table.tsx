@@ -11,7 +11,6 @@ import { Skeleton } from '@workspace/ui/components/skeleton';
 import { useFriends } from '../hooks/use-friends';
 
 const FriendTable = () => {
-  // Assume useFriends returns { data, isLoading, error }
   const { data: friends, isLoading, error } = useFriends();
 
   if (isLoading) {
@@ -39,17 +38,20 @@ const FriendTable = () => {
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
-            {/* Add additional columns here as needed */}
+            <TableHead>Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {friends.map((friend: any) => (
-            <TableRow key={friend.id}>
-              <TableCell>{friend.name}</TableCell>
-              <TableCell>{friend.email}</TableCell>
-              {/* Add more cells as needed */}
-            </TableRow>
-          ))}
+          {friends.map((data: any) => {
+            const friend = data.friend;
+            return (
+              <TableRow key={friend.id}>
+                <TableCell>{friend.name}</TableCell>
+                <TableCell>{friend.email}</TableCell>
+                <TableCell>{friend.status}</TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>

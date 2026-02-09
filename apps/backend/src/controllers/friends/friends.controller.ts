@@ -118,14 +118,18 @@ const getAvailableUsers = asyncHandler(async (req: Request, res: Response) => {
           },
         },
       ],
-      NOT: {
-        id: userId,
-        friends: {
-          some: {
-            userId,
+      NOT: [
+        {
+          id: userId,
+        },
+        {
+          friends: {
+            some: {
+              id: userId,
+            },
           },
         },
-      },
+      ],
     },
   });
 
