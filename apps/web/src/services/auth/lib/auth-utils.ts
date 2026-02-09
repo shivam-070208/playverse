@@ -11,6 +11,7 @@ const getSession = async () => {
     });
     return session;
   } catch (error) {
+    console.log(error);
     return null;
   }
 };

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import * as SeparatorPrimitive from '@radix-ui/react-separator';
+import { Separator as SeparatorPrimitive } from 'radix-ui';
 
 import { cn } from '@workspace/ui/lib/utils';
 
@@ -36,5 +36,4 @@ function GradientSeparator({ className, ...props }: React.HTMLAttributes<HTMLDiv
     />
   );
 }
-
 export { Separator, GradientSeparator };

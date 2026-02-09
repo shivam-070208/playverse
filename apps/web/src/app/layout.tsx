@@ -1,10 +1,10 @@
 import { Geist, Geist_Mono } from 'next/font/google';
-
+import localFont from 'next/font/local';
 import '@workspace/ui/globals.css';
-import { ThemeProvider } from '@/components/providers/theme-provider';
 import { ToastProvider } from '@/components/providers/toast-provider';
 import { QueryProvider } from '@/components/providers/query-provider';
-
+import { ThemeProvider } from '@/components/providers/theme-provider';
+import type { Metadata } from 'next';
 const fontSans = Geist({
   subsets: ['latin'],
   variable: '--font-sans',
@@ -14,6 +14,24 @@ const fontMono = Geist_Mono({
   subsets: ['latin'],
   variable: '--font-mono',
 });
+const fontRyzes = localFont({
+  src: [
+    {
+      path: '../assets/font/Ryzes-ax92x.ttf',
+      weight: '700',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-local-ryzes',
+});
+
+export const metadata: Metadata = {
+  title: {
+    default: 'Play Verse',
+    template: '%s - Play Verse',
+  },
+  description: 'Make your team productive with fun',
+};
 
 export default function RootLayout({
   children,
@@ -22,7 +40,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}>
+      <body
+        className={`${fontSans.variable} ${fontMono.variable} ${fontRyzes.variable} font-sans antialiased `}
+      >
         <ThemeProvider>
           <QueryProvider>
             <ToastProvider>{children}</ToastProvider>

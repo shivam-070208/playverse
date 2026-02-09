@@ -7,13 +7,12 @@ import friendsRouter from '@/routes/friends.route';
 import { ALLOWED_ORIGINS, PORT } from '@/configuration/env.configuration';
 // Variable declaration
 const app = express();
-
 // Middlewares
 app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-      if (ALLOWED_ORIGINS.includes(origin)) {
+      if (ALLOWED_ORIGINS?.includes(origin)) {
         return callback(null, true);
       } else {
         return callback(new Error('Not allowed by CORS'));
@@ -24,7 +23,6 @@ app.use(
   }),
 );
 
-// Better-Auth Api configuration
 app.all('/api/auth/{*any}', toNodeHandler(auth));
 
 app.use(express.json());
@@ -34,7 +32,8 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', (req, res) => {
   res.send('Hello World');
 });
-app.use('/friends', friendsRouter);
+
+app.use('/api/v1/friends', friendsRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

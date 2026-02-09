@@ -1,12 +1,12 @@
 {
   "extends": "@workspace/typescript-config/base.json",
   "compilerOptions": {
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "rootDir": "./src",
     "outDir": "./dist",
     "paths": {
-      "@/*": ["*"],
-      "@types/*": ["types/*"]
+      "@/*": ["./src/*"],
+      "@types/*": ["./src/types/*"]
     }
   },
   "include": ["src/**/*.ts"],
