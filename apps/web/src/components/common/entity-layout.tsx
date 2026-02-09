@@ -8,10 +8,7 @@ type EntityContextType = {
   setSearch: Dispatch<SetStateAction<string>>;
 };
 
-const EntityContext = createContext<EntityContextType>({
-  search: '',
-  setSearch: () => {},
-});
+const EntityContext = createContext<EntityContextType | undefined>(undefined);
 
 //* Hooks
 /**
