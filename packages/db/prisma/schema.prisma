@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client"
-    output   = "../src/generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -122,4 +122,25 @@ model Friendship {
   @@unique([userId, friendId])
   @@index([userId])
   @@map("friendships")
+}
+
+enum Message_Status {
+  FAILED
+  SENT
+  READ
+}
+
+model Message {
+  id         String         @id @default(cuid())
+  senderId   String
+  receiverId String
+  data       Json
+  isUnread   Boolean        @default(false)
+  status     Message_Status @default(SENT)
+  isEdited  Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("message")
 }
