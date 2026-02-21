@@ -10,7 +10,6 @@ export function createWebSocketServer() {
     port: PORT,
   });
 
-  // Attach headers middleware
   wss.on('headers', (headers, req) => {
     attachAuthHeader(headers, req);
   });
@@ -18,8 +17,7 @@ export function createWebSocketServer() {
   wss.on('connection', (socket, req) => {
     let userId: string | undefined;
     try {
-      const url = new URL(req.url || '', 'http://localhost');
-      userId = url.searchParams.get('userId') || undefined;
+      userId = req.headers['x-user-id'] as string | undefined;
     } catch (e) {
       userId = undefined;
     }

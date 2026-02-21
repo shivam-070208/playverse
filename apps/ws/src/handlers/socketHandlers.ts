@@ -1,11 +1,12 @@
 import WebSocket from 'ws';
-import { Request } from 'http';
+
 import { SocketEvents } from '@workspace/config';
 import { kafkaProducer } from '@/services/kafka';
 import { redisPublisher } from '@/services/redis';
 import { clientManager } from '@/utils/clientManager';
+import { IncomingMessage } from 'node:http';
 
-export function attachSocketHandlers(socket: WebSocket, req: Request) {
+export function attachSocketHandlers(socket: WebSocket, req: IncomingMessage) {
   let userId: string | undefined;
   try {
     const url = new URL(req.url || '', 'http://localhost');
@@ -61,14 +62,13 @@ export function attachSocketHandlers(socket: WebSocket, req: Request) {
     }
   });
 
-  // Handle native close event (backup)
   socket.on('close', () => {
     clientManager.removeClientBySocket(socket);
   });
 }
 
-export function attachAuthHeader(headers: string[], req: Request) {
-  if (!req.headers['authorization']) {
+export function attachAuthHeader(headers: string[], req: IncomingMessage) {
+  if (!req.headers.authorization) {
     headers.push('HTTP/1.1 401 Unauthorized');
     headers.push('content-type: text/plain');
     headers.push('connection: close');
