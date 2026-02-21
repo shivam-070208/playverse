@@ -21,10 +21,6 @@ export enum SocketEvents {
   TYPING_STOP = 'typing_stop',
   PRESENCE_UPDATE = 'presence_update',
 
-  // Friend events
-  FRIEND_REQUEST = 'friend_request',
-  FRIEND_ACCEPT = 'friend_accept',
-
   // Health
   PING = 'ping',
   PONG = 'pong',

@@ -6,9 +6,14 @@ import { redisPublisher } from '@/services/redis';
 import { clientManager } from '@/utils/clientManager';
 
 export function attachSocketHandlers(socket: WebSocket, req: Request) {
-  const userId = req.url?.split('?userId=')[1]; // Simple parse for illustration
+  let userId: string | undefined;
+  try {
+    const url = new URL(req.url || '', 'http://localhost');
+    userId = url.searchParams.get('userId') || undefined;
+  } catch (e) {
+    userId = undefined;
+  }
 
-  // On connection, notify Kafka to update user status to ONLINE
   if (userId) {
     kafkaProducer
       .send({
@@ -27,30 +32,27 @@ export function attachSocketHandlers(socket: WebSocket, req: Request) {
       .catch(console.error);
   }
 
-  // Handle socket close event
   socket.on(SocketEvents.CLOSE, async () => {
-    clientManager.removeClient(socket);
+    const removedUser = clientManager.removeClientBySocket(socket);
 
-    // On disconnect, notify Kafka to update user status to OFFLINE
-    if (userId) {
+    if (removedUser) {
       await kafkaProducer.send({
         topic: 'user-status',
         messages: [
           {
-            key: userId,
+            key: removedUser,
             value: JSON.stringify({
-              userId,
+              userId: removedUser,
               status: 'OFFLINE',
               timestamp: Date.now(),
             }),
           },
         ],
       });
+      console.log('User disconnected:', removedUser);
     }
-    console.log('User disconnected:', userId);
   });
 
-  // Handle chat message events
   socket.on(SocketEvents.CHAT_MESSAGE_SENT, async (data) => {
     try {
       await redisPublisher.publish('chat-messages', JSON.stringify(data));
@@ -61,7 +63,7 @@ export function attachSocketHandlers(socket: WebSocket, req: Request) {
 
   // Handle native close event (backup)
   socket.on('close', () => {
-    clientManager.removeClient(socket);
+    clientManager.removeClientBySocket(socket);
   });
 }
 

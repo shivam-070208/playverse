@@ -6,12 +6,13 @@ export async function initializeRedisPubSub() {
   try {
     await redisSubscriber.subscribe('chat-messages', (message) => {
       try {
-        const data = JSON.parse(message);
-        const payload = JSON.stringify({
-          event: SocketEvents.CHAT_MESSAGE_SENT,
-          data,
-        });
-        clientManager.broadcast(payload);
+        const data = JSON.parse(message); // expected { to, text, ... }
+        if (data && data.to) {
+          clientManager.sendMessage(
+            String(data.to),
+            JSON.stringify({ event: SocketEvents.CHAT_MESSAGE_SENT, data }),
+          );
+        }
       } catch (error) {
         console.error('Error processing Redis message:', error);
       }

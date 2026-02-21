@@ -3,7 +3,7 @@ import { PORT } from '@/config/env.config';
 import { attachSocketHandlers, attachAuthHeader } from '@/handlers/socketHandlers';
 import { clientManager } from '@/utils/clientManager';
 import { SocketEvents } from '@workspace/config';
-import { redisPublisher } from '@/services/redis'; // assumes redisPublisher is exported from redis service
+import { redisPublisher } from '@/services/redis';
 
 export function createWebSocketServer() {
   const wss = new WebSocketServer({
@@ -16,20 +16,29 @@ export function createWebSocketServer() {
   });
 
   wss.on('connection', (socket, req) => {
-    clientManager.addClient(socket);
+    let userId: string | undefined;
+    try {
+      const url = new URL(req.url || '', 'http://localhost');
+      userId = url.searchParams.get('userId') || undefined;
+    } catch (e) {
+      userId = undefined;
+    }
+
+    if (userId) clientManager.addClient(userId, socket);
     attachSocketHandlers(socket, req);
 
     socket.on('message', async (data) => {
       try {
         const parsed = JSON.parse(data.toString());
         if (parsed.event === SocketEvents.CHAT_MESSAGE_SENT) {
-          const payload = JSON.stringify({
-            event: SocketEvents.CHAT_MESSAGE_SENT,
-            data: parsed.data,
-          });
-          clientManager.broadcast(payload);
-
-          await redisPublisher.publish('chat-messages', JSON.stringify(parsed.data));
+          const data = parsed.data;
+          if (data && data.to) {
+            clientManager.sendMessage(
+              String(data.to),
+              JSON.stringify({ event: SocketEvents.CHAT_MESSAGE_SENT, data }),
+            );
+            await redisPublisher.publish('chat-messages', JSON.stringify(data));
+          }
         }
       } catch (error) {
         console.error('Error handling incoming message:', error);
@@ -37,7 +46,7 @@ export function createWebSocketServer() {
     });
 
     socket.on('close', () => {
-      clientManager.removeClient(socket);
+      clientManager.removeClientBySocket(socket);
     });
   });
 
