@@ -1,7 +1,6 @@
 import WebSocket from 'ws';
 
 class ClientManager {
-  // userId -> set of sockets (support multiple devices)
   private clients: Map<string, Set<WebSocket>> = new Map();
 
   addClient(userId: string, socket: WebSocket) {

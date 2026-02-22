@@ -5,9 +5,10 @@ import { toNodeHandler } from 'better-auth/node';
 import { auth } from '@workspace/auth';
 import friendsRouter from '@/routes/friends.route';
 import { ALLOWED_ORIGINS, PORT } from '@/configuration/env.configuration';
+
 // Variable declaration
 const app = express();
-// Middlewares
+
 app.use(
   cors({
     origin: (origin, callback) => {

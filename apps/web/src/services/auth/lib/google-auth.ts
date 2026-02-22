@@ -8,7 +8,6 @@ const googleAuth = async () => {
       callbackURL: BASE_URL,
     });
     if (error) throw new Error(error.message);
-    console.log(error);
     return data;
   } catch (error) {
     console.error('Google authentication failed:', error);
