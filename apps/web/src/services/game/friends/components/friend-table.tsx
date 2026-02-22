@@ -42,16 +42,13 @@ const FriendTable = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {friends.map((data: any) => {
-            const friend = data.friend;
-            return (
-              <TableRow key={friend.id}>
-                <TableCell>{friend.name}</TableCell>
-                <TableCell>{friend.email}</TableCell>
-                <TableCell>{friend.status}</TableCell>
-              </TableRow>
-            );
-          })}
+          {friends.map((friend) => (
+            <TableRow key={friend.id}>
+              <TableCell>{friend.name}</TableCell>
+              <TableCell>{friend.email}</TableCell>
+              <TableCell>{friend.status}</TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </div>

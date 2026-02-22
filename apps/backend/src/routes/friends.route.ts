@@ -1,13 +1,4 @@
-import {
-  acceptFriendRequestController,
-  getAllFriendController,
-  getAvailableUsers,
-  getReceivedRequests,
-  getSentRequestsController,
-  rejectFriendRequestController,
-  removeFriendController,
-  sendFriendRequestController,
-} from '@/controllers/friends/friends.controller';
+import * as FriendsController from '@/controllers/friends/friends.controller';
 import express from 'express';
 import type { Router } from 'express';
 import { isAuthorize, isEmailVerified } from '@/middlewares/auth.middleware';
@@ -20,17 +11,17 @@ friendsRouter.use(isEmailVerified);
 
 // routes
 //? GET Request
-friendsRouter.get('/', getAllFriendController);
-friendsRouter.get('/requests/sent', getSentRequestsController);
-friendsRouter.get('/requests/received', getReceivedRequests);
-friendsRouter.get('/available', getAvailableUsers);
+friendsRouter.get('/', FriendsController.getAllFriends);
+friendsRouter.get('/requests/sent', FriendsController.getSentFriendRequests);
+friendsRouter.get('/requests/received', FriendsController.getReceivedFriendRequests);
+friendsRouter.get('/available', FriendsController.getAvailableUsers);
 
 //* POST Requests
-friendsRouter.post('/request/send/:userId', sendFriendRequestController);
-friendsRouter.post('/request/accept/:requestId', acceptFriendRequestController);
-friendsRouter.post('/request/rejects/:requestId', rejectFriendRequestController);
+friendsRouter.post('/request/send/:userId', FriendsController.sendFriendRequest);
+friendsRouter.post('/request/accept/:requestId', FriendsController.acceptFriendRequest);
+friendsRouter.post('/request/rejects/:requestId', FriendsController.rejectFriendRequest);
 
 //! DELETE Request
-friendsRouter.delete('/remove/:friendId', removeFriendController);
+friendsRouter.delete('/remove/:friendId', FriendsController.removeFriend);
 
 export default friendsRouter;

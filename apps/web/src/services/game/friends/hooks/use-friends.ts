@@ -1,21 +1,31 @@
 import { axiosInstance } from '@/lib/axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-export const useFriends = (options?: { page?: number; limit?: number }) =>
-  useQuery({
-    queryKey: ['friends', options?.page, options?.limit],
+import { FriendRequest } from '../../types/friend-request';
+import { User } from '../../types/user';
+
+export const useFriends = (options?: {
+  page?: number;
+  limit?: number;
+  searchQuery?: string;
+}): ReturnType<typeof useQuery<User[]>> =>
+  useQuery<User[]>({
+    queryKey: ['friends', options?.page, options?.limit, options?.searchQuery],
     queryFn: async () => {
       const response = await axiosInstance.get('/friends', {
         params: {
           ...(options?.page != null ? { page: options.page } : {}),
           ...(options?.limit != null ? { limit: options.limit } : {}),
+          ...(options?.searchQuery ? { searchQuery: options.searchQuery } : {}),
         },
       });
-      return response.data.Friends;
+      return response.data.friends as User[];
     },
   });
 
-export const useReceivedFriendRequests = (searchQuery?: string) =>
+export const useReceivedFriendRequests = (
+  searchQuery?: string,
+): ReturnType<typeof useQuery<FriendRequest[]>> =>
   useQuery({
     queryKey: ['received-friend-requests', searchQuery],
     queryFn: async () => {

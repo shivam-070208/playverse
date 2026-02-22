@@ -56,7 +56,7 @@ const ViewApplicationsButton: React.FC = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {requests.map((request: any) => (
+                {requests.map((request) => (
                   <TableRow key={request.id}>
                     <TableCell>{request.fromUser?.name || 'Unknown'}</TableCell>
                     <TableCell>{request.fromUser?.email || '-'}</TableCell>

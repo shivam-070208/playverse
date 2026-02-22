@@ -5,6 +5,7 @@ import { Button } from '@workspace/ui/components/button';
 import { authClient } from '@/lib/auth-client';
 import { FaComments, FaGamepad, FaRocket } from 'react-icons/fa';
 import { cn } from '@workspace/ui/lib/utils';
+import { ChatSheet } from './chat-sheet';
 
 const chatPresets = [
   { icon: <FaComments />, label: 'Messages' },
@@ -20,16 +21,12 @@ const LobbyFooter = () => {
         {/* Preset Actions */}
         <div className="flex gap-2 items-center pl-1">
           {chatPresets.map((preset, i) => (
-            <Button
-              type="button"
-              key={`${preset.label + i}`}
-              size="sm"
-              variant="ghost"
-              className="gap-1 rounded-none"
-            >
-              {preset.icon}
-              <span className="hidden sm:inline">{preset.label}</span>
-            </Button>
+            <ChatSheet key={`${preset.label + i}`}>
+              <Button type="button" size="sm" variant="ghost" className="gap-1 rounded-none">
+                {preset.icon}
+                <span className="hidden sm:inline">{preset.label}</span>
+              </Button>
+            </ChatSheet>
           ))}
         </div>
         <Button
