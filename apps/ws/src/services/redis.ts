@@ -1,11 +1,11 @@
 import { createClient, RedisClientType } from 'redis';
-
+import { REDIS_URL } from '@/config/env.config';
 const redisPublisher: RedisClientType = createClient({
-  url: process.env.REDIS_URL || 'redis://localhost:6379',
+  url: REDIS_URL,
 });
 
 const redisSubscriber: RedisClientType = createClient({
-  url: process.env.REDIS_URL || 'redis://localhost:6379',
+  url: REDIS_URL,
 });
 
 redisPublisher.on('error', (err) => {

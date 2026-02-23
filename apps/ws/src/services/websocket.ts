@@ -11,10 +11,12 @@ export function createWebSocketServer() {
   });
 
   wss.on('headers', (headers, req) => {
+    console.log(req.headers);
     attachAuthHeader(headers, req);
   });
 
   wss.on('connection', (socket, req) => {
+    console.log(`socket client connected `);
     let userId: string | undefined;
     try {
       userId = req.headers['x-user-id'] as string | undefined;

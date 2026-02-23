@@ -1,8 +1,9 @@
+import { KAFKA_BROKERS } from '@/config/env.config';
 import { Kafka, logLevel } from 'kafkajs';
 
 const kafka = new Kafka({
   clientId: 'ws-server',
-  brokers: process.env.KAFKA_BROKERS?.split(',') || ['localhost:9092'],
+  brokers: KAFKA_BROKERS,
   logLevel: logLevel.ERROR,
 });
 
