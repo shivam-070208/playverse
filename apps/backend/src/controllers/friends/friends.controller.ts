@@ -1,12 +1,12 @@
 import { RequestWithSession } from '@/types/extended-request';
 import { db } from '@workspace/db';
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
 import { asyncHandler } from '@/utils/async-handler';
 import { StatusCodes } from '@workspace/config';
 //* GET Controllers
 
-const getAllFriends = asyncHandler(async (req: Request, res: Response) => {
-  const userId = (req as RequestWithSession).session.user.id;
+const getAllFriends = asyncHandler(async (req: RequestWithSession, res: Response) => {
+  const userId = req.session.user.id;
   const { limit = 20, page = 0, searchQuery = '' } = req.query;
 
   const friendships = await db.friendship.findMany({
@@ -50,9 +50,9 @@ const getAllFriends = asyncHandler(async (req: Request, res: Response) => {
   return res.status(StatusCodes.HTTP_200_OK).json({ friends });
 });
 
-const getSentFriendRequests = asyncHandler(async (req: Request, res: Response) => {
+const getSentFriendRequests = asyncHandler(async (req: RequestWithSession, res: Response) => {
   const { searchQuery = '' } = req.query;
-  const userId = (req as RequestWithSession).session.user.id;
+  const userId = req.session.user.id;
   const sentRequests = await db.friendRequest.findMany({
     where: {
       fromUserId: {
@@ -86,9 +86,9 @@ const getSentFriendRequests = asyncHandler(async (req: Request, res: Response) =
   return res.status(StatusCodes.HTTP_200_OK).json({ sentRequests });
 });
 
-const getReceivedFriendRequests = asyncHandler(async (req: Request, res: Response) => {
+const getReceivedFriendRequests = asyncHandler(async (req: RequestWithSession, res: Response) => {
   const { searchQuery = '' } = req.query;
-  const userId = (req as RequestWithSession).session.user.id;
+  const userId = req.session.user.id;
   const receivedRequests = await db.friendRequest.findMany({
     where: {
       toUserId: userId,
@@ -120,9 +120,9 @@ const getReceivedFriendRequests = asyncHandler(async (req: Request, res: Respons
   return res.status(StatusCodes.HTTP_200_OK).json({ receivedRequests });
 });
 
-const getAvailableUsers = asyncHandler(async (req: Request, res: Response) => {
+const getAvailableUsers = asyncHandler(async (req: RequestWithSession, res: Response) => {
   const { searchQuery = '' } = req.query;
-  const userId = (req as RequestWithSession).session.user.id;
+  const userId = req.session.user.id;
 
   const availableUsers = await db.user.findMany({
     where: {
@@ -157,8 +157,8 @@ const getAvailableUsers = asyncHandler(async (req: Request, res: Response) => {
 });
 
 //? POST Controllers
-const sendFriendRequest = asyncHandler(async (req: Request, res: Response) => {
-  const fromUserId = (req as RequestWithSession).session.user.id;
+const sendFriendRequest = asyncHandler(async (req: RequestWithSession, res: Response) => {
+  const fromUserId = req.session.user.id;
   const userId = req.params.userId as string;
 
   if (fromUserId === userId) {
@@ -200,8 +200,8 @@ const sendFriendRequest = asyncHandler(async (req: Request, res: Response) => {
   return res.status(StatusCodes.HTTP_201_CREATED).json({ request });
 });
 
-const acceptFriendRequest = asyncHandler(async (req: Request, res: Response) => {
-  const toUserId = (req as RequestWithSession).session.user.id;
+const acceptFriendRequest = asyncHandler(async (req: RequestWithSession, res: Response) => {
+  const toUserId = req.session.user.id;
   const requestId = req.params.requestId as string;
   const result = await db.$transaction(async (prisma) => {
     const friendRequest = await prisma.friendRequest.findFirst({
@@ -230,8 +230,8 @@ const acceptFriendRequest = asyncHandler(async (req: Request, res: Response) => 
   return res.status(StatusCodes.HTTP_200_OK).json({ message: 'Friend request accepted.' });
 });
 
-const rejectFriendRequest = asyncHandler(async (req: Request, res: Response) => {
-  const toUserId = (req as RequestWithSession).session.user.id;
+const rejectFriendRequest = asyncHandler(async (req: RequestWithSession, res: Response) => {
+  const toUserId = req.session.user.id;
   const requestId = req.params.requestId as string;
   const friendRequest = await db.friendRequest.findFirst({
     where: { id: requestId, toUserId },
@@ -248,8 +248,8 @@ const rejectFriendRequest = asyncHandler(async (req: Request, res: Response) => 
 });
 
 //! DELETE Controller
-const removeFriend = asyncHandler(async (req: Request, res: Response) => {
-  const userId = (req as RequestWithSession).session.user.id;
+const removeFriend = asyncHandler(async (req: RequestWithSession, res: Response) => {
+  const userId = req.session.user.id;
   const friendId = req.params.friendId as string;
   await db.friendship.deleteMany({
     where: {

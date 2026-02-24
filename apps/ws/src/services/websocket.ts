@@ -1,6 +1,6 @@
 import { WebSocketServer } from 'ws';
 import { PORT } from '@/config/env.config';
-import { attachSocketHandlers, attachAuthHeader } from '@/handlers/socketHandlers';
+import { attachSocketHandlers, attachAuthHeader } from '@/handlers/socket-handlers';
 import { clientManager } from '@/utils/clientManager';
 import { SocketEvents } from '@workspace/config';
 import { redisPublisher } from '@/services/redis';
