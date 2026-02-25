@@ -6,6 +6,6 @@ const chatRouter: Router = express.Router();
 
 chatRouter.use(isAuthorize);
 
-chatRouter.get('/:id/messages', ChatController.getMessages);
+chatRouter.get('/:receiverId/messages', ChatController.getMessages);
 
 export default chatRouter;

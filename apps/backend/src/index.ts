@@ -4,6 +4,7 @@ import cors from 'cors';
 import { toNodeHandler } from 'better-auth/node';
 import { auth } from '@workspace/auth';
 import friendsRouter from '@/routes/friends.route';
+import chatRouter from '@/routes/chat.route';
 import { ALLOWED_ORIGINS, PORT } from '@/configuration/env.configuration';
 
 // Variable declaration
@@ -35,7 +36,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/v1/friends', friendsRouter);
-
+app.use('/api/v1/chat', chatRouter);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
