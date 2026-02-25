@@ -36,6 +36,11 @@ model User {
   friends          Friendship[]    @relation("UserFriends")
   sentRequests     FriendRequest[] @relation("FriendRequestsSent")
   receivedRequests FriendRequest[] @relation("FriendRequestsReceived")
+  messagesSended   Message[]       @relation("messagesender")
+  messagesReceived Message[]       @relation("messagereceiver")
+
+  chat1 Chat[] @relation("User1Chats")
+  chat2 Chat[] @relation("User2Chats")
 
   @@unique([email])
   @@map("user")
@@ -124,9 +129,25 @@ model Friendship {
   @@map("friendships")
 }
 
+model Chat {
+  id        String   @id @default(cuid())
+  user1Id   String
+  user2Id   String
+  createdAt DateTime @default(now())
+
+  user1 User @relation("User1Chats", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2 User @relation("User2Chats", fields: [user2Id], references: [id], onDelete: Cascade)
+
+  messages Message[]
+
+  @@unique([user1Id, user2Id])
+  @@map("chat")
+}
+
 enum Message_Status {
   FAILED
   SENT
+  RECEIVED
   READ
 }
 
@@ -135,9 +156,13 @@ model Message {
   senderId   String
   receiverId String
   data       Json
-  isUnread   Boolean        @default(false)
   status     Message_Status @default(SENT)
-  isEdited  Boolean @default(false)
+  isEdited   Boolean        @default(false)
+  chatId     String
+
+  sender   User @relation("messagesender", fields: [senderId], references: [id])
+  receiver User @relation("messagereceiver", fields: [receiverId], references: [id])
+  chat     Chat @relation(fields: [chatId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
