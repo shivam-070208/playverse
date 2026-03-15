@@ -68,9 +68,6 @@ export function attachSocketHandlers(socket: WebSocket, req: IncomingMessage) {
 }
 
 export function attachAuthHeader(headers: string[], req: IncomingMessage) {
-  if (!req.headers.authorization) {
-    headers.push('HTTP/1.1 401 Unauthorized');
-    headers.push('content-type: text/plain');
-    headers.push('connection: close');
-  }
+  void headers;
+  void req;
 }

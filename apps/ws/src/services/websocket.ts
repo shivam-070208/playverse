@@ -4,6 +4,7 @@ import { attachSocketHandlers, attachAuthHeader } from '@/handlers/socket-handle
 import { clientManager } from '@/utils/clientManager';
 import { SocketEvents } from '@workspace/config';
 import { redisPublisher } from '@/services/redis';
+import { kafkaProducer } from '@/services/kafka';
 
 export function createWebSocketServer() {
   const wss = new WebSocketServer({
@@ -11,7 +12,6 @@ export function createWebSocketServer() {
   });
 
   wss.on('headers', (headers, req) => {
-    console.log(req.headers);
     attachAuthHeader(headers, req);
   });
 
@@ -31,13 +31,28 @@ export function createWebSocketServer() {
       try {
         const parsed = JSON.parse(data.toString());
         if (parsed.event === SocketEvents.CHAT_MESSAGE_SENT) {
-          const data = parsed.data;
-          if (data && data.to) {
+          const payload = parsed.data;
+          if (payload && payload.to && payload.from) {
             clientManager.sendMessage(
-              String(data.to),
-              JSON.stringify({ event: SocketEvents.CHAT_MESSAGE_SENT, data }),
+              String(payload.to),
+              JSON.stringify({ event: SocketEvents.CHAT_MESSAGE_SENT, data: payload }),
             );
-            await redisPublisher.publish('chat-messages', JSON.stringify(data));
+
+            await redisPublisher.publish('chat-messages', JSON.stringify(payload));
+
+            try {
+              await kafkaProducer.send({
+                topic: 'chat-messages',
+                messages: [
+                  {
+                    key: String(payload.to),
+                    value: JSON.stringify(payload),
+                  },
+                ],
+              });
+            } catch (kafkaError) {
+              console.error('Kafka publish error (chat-messages):', kafkaError);
+            }
           }
         }
       } catch (error) {

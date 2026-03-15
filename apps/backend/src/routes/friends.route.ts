@@ -21,7 +21,7 @@ friendsRouter.post('/request/send/:userId', FriendsController.sendFriendRequest)
 friendsRouter.post('/request/accept/:requestId', FriendsController.acceptFriendRequest);
 friendsRouter.post('/request/rejects/:requestId', FriendsController.rejectFriendRequest);
 
-//! DELETE Request
+//! DELETE Requnest
 friendsRouter.delete('/remove/:friendId', FriendsController.removeFriend);
 
 export default friendsRouter;

@@ -17,6 +17,7 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@tanstack/react-query": "^5.90.20",
     "@workspace/ui": "workspace:*",
+    "@workspace/config": "workspace:*",
     "axios": "^1.13.3",
     "better-auth": "^1.4.15",
     "lucide-react": "^0.475.0",

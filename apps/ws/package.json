@@ -21,6 +21,7 @@
   "dependencies": {
     "@types/ws": "^8.18.1",
     "@workspace/config": "workspace:*",
+    "@workspace/db": "workspace:*",
     "dotenv": "^17.2.3",
     "kafkajs": "^2.2.4",
     "redis": "^5.11.0",

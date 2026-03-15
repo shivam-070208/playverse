@@ -13,23 +13,42 @@ export const getMessages = asyncHandler(async (req: RequestWithSession, res: Res
     });
   }
 
-  const messages = await db.message.findMany({
+  let chatData = await db.chat.findFirst({
     where: {
       OR: [
         {
-          senderId: userId,
-          receiverId: receiverId,
+          user1Id: userId,
+          user2Id: receiverId,
         },
         {
-          senderId: receiverId,
-          receiverId: userId,
+          user1Id: receiverId,
+          user2Id: userId,
         },
       ],
     },
-    orderBy: {
-      createdAt: 'desc',
+    include: {
+      messages: {
+        orderBy: {
+          createdAt: 'asc',
+        },
+      },
     },
   });
 
-  res.status(StatusCodes.HTTP_200_OK).json({ messages });
+  if (!chatData) {
+    chatData = await db.chat.create({
+      data: {
+        user1Id: userId,
+        user2Id: receiverId,
+      },
+      include: {
+        messages: {
+          orderBy: {
+            createdAt: 'asc',
+          },
+        },
+      },
+    });
+  }
+  res.status(StatusCodes.HTTP_200_OK).json({ messages: chatData?.messages || [] });
 });
