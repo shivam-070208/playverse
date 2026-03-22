@@ -1,6 +1,6 @@
 export enum SocketEvents {
   // Connection lifecycle
-  CONNECT = 'connect',
+  CONNECT = 'connection',
   DISCONNECT = 'disconnect',
   AUTH_ERROR = 'auth_error',
   CLOSE = 'close',

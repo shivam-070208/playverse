@@ -26,10 +26,16 @@ const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   }, [userId]);
   useEffect(() => {
     if (!encodedWS_URL) return;
-    const socket = new WebSocket(encodedWS_URL);
-    setSocket(socket);
+    console.log('Connecting web socket');
+    const ws = new WebSocket(encodedWS_URL);
+
+    ws.onopen = () => {
+      console.log('WebSocket connected');
+      setSocket(ws);
+    };
+
     return () => {
-      socket.close();
+      ws.close();
       setSocket(null);
     };
   }, [encodedWS_URL]);

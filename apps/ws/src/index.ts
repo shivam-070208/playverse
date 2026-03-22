@@ -1,18 +1,12 @@
 import 'dotenv/config';
-
-import { initializeRedis } from '@/services/redis';
-import { initializeKafka } from '@/services/kafka';
+import { initKafka } from '@/services/kafka/init';
 import { createWebSocketServer } from '@/services/websocket';
-import { initializeRedisPubSub } from '@/services/redisPubSub';
 
 async function startServer() {
   try {
-    await initializeRedis();
-    await initializeKafka();
+    await initKafka();
 
     createWebSocketServer();
-
-    await initializeRedisPubSub();
 
     console.log('Server initialized successfully');
   } catch (error) {

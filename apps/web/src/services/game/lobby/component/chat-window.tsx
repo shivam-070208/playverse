@@ -1,12 +1,22 @@
 'use client';
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useChatMessage } from '@/services/game/lobby/hooks/use-chat';
 import { Button } from '@workspace/ui/components/button';
 import { Input } from '@workspace/ui/components/input';
 import { Avatar, AvatarImage, AvatarFallback } from '@workspace/ui/components/avatar';
 import { FaArrowLeft, FaPaperPlane } from 'react-icons/fa';
 import type { User } from '@/services/game/types/user';
+import type { ChatMessage } from '@/services/game/types/messages';
 import { authClient } from '@/lib/auth-client';
+import { useSocketContextValues } from '@/components/providers/socket-provider';
+import { SocketEvents } from '@workspace/config';
+
+type IncomingSocketPayload =
+  | {
+      event?: string;
+      data?: { to?: string; from?: string; text?: string; [k: string]: unknown };
+    }
+  | string;
 
 interface Props {
   receiverId: string;
@@ -17,15 +27,105 @@ interface Props {
 const ChatWindow = ({ receiverId, receiver, setSelectedReceiverId }: Props) => {
   const { data: messages = [], isLoading } = useChatMessage(receiverId);
   const [inputValue, setInputValue] = useState('');
+  const [liveMessages, setLiveMessages] = useState<ChatMessage[]>([]);
   const { data: currentUser } = authClient.useSession();
   const currentUserId = currentUser?.user.id;
+  const { socket } = useSocketContextValues();
 
-  // Send message handler (to implement)
+  useEffect(() => {
+    if (!socket) return;
+
+    const handler = (event: MessageEvent) => {
+      let parsed: IncomingSocketPayload;
+      try {
+        parsed = JSON.parse(event.data);
+      } catch {
+        parsed = event.data as string;
+      }
+
+      if (typeof parsed === 'string') return;
+      if (parsed.event !== SocketEvents.CHAT_MESSAGE_SENT) return;
+
+      const data = parsed.data;
+      if (!data) return;
+
+      const to = String(data.to ?? '');
+      const from = String(data.from ?? '');
+      const text = typeof data.text === 'string' ? data.text : '';
+
+      if (!text) return;
+
+      const isForThisChat =
+        !!currentUserId &&
+        ((to === receiverId && from === currentUserId) ||
+          (to === currentUserId && from === receiverId));
+      if (!isForThisChat) return;
+
+      setLiveMessages((prev) => [
+        ...prev,
+        {
+          id: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`,
+          senderId: from || receiverId,
+          receiverId: to || currentUserId || receiverId,
+          data: { text },
+          status: 'RECEIVED',
+          isEdited: false,
+          chatId: 'live',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ]);
+    };
+
+    socket.addEventListener('message', handler);
+    return () => {
+      socket.removeEventListener('message', handler);
+    };
+  }, [socket, receiverId, currentUserId]);
+
+  const allMessages = useMemo(() => {
+    const combined = [...messages, ...liveMessages];
+    combined.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    return combined;
+  }, [messages, liveMessages]);
+
   const handleSend = (e?: React.FormEvent | React.MouseEvent) => {
     if (e) e.preventDefault();
-    if (!inputValue.trim()) return;
-    // TODO: Send message logic
+    const text = inputValue.trim();
+    if (!text) return;
+    if (!currentUserId) return;
+    if (!socket || socket.readyState !== WebSocket.OPEN) return;
+    console.log('Sending message');
+    const payload = {
+      event: SocketEvents.CHAT_MESSAGE_SENT,
+      data: {
+        from: currentUserId,
+        to: receiverId,
+        text,
+      },
+    };
+
+    try {
+      socket.send(JSON.stringify(payload));
+    } catch {
+      return;
+    }
+
     setInputValue('');
+    setLiveMessages((prev) => [
+      ...prev,
+      {
+        id: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`,
+        senderId: currentUserId,
+        receiverId,
+        data: { text },
+        status: 'SENT',
+        isEdited: false,
+        chatId: 'live',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    ]);
   };
 
   return (
@@ -58,10 +158,10 @@ const ChatWindow = ({ receiverId, receiver, setSelectedReceiverId }: Props) => {
       <div className="flex-1 p-4 overflow-y-auto bg-background space-y-2">
         {isLoading ? (
           <div className="text-muted-foreground text-sm">Loading...</div>
-        ) : messages.length === 0 ? (
+        ) : allMessages.length === 0 ? (
           <div className="text-muted-foreground text-sm text-center">No messages yet.</div>
         ) : (
-          messages.map((message) => (
+          allMessages.map((message) => (
             <div
               key={message.id}
               className={`flex ${message.senderId === currentUserId ? 'justify-end' : 'justify-start'}`}
