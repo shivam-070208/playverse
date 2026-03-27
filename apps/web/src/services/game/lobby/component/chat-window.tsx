@@ -44,7 +44,7 @@ const ChatWindow = ({ receiverId, receiver, setSelectedReceiverId }: Props) => {
       }
 
       if (typeof parsed === 'string') return;
-      if (parsed.event !== SocketEvents.CHAT_MESSAGE_SENT) return;
+      if (parsed.event !== SocketEvents.CHAT_MESSAGE_RECIEVED) return;
 
       const data = parsed.data;
       if (!data) return;
@@ -95,7 +95,6 @@ const ChatWindow = ({ receiverId, receiver, setSelectedReceiverId }: Props) => {
     if (!text) return;
     if (!currentUserId) return;
     if (!socket || socket.readyState !== WebSocket.OPEN) return;
-    console.log('Sending message');
     const payload = {
       event: SocketEvents.CHAT_MESSAGE_SENT,
       data: {
@@ -129,7 +128,7 @@ const ChatWindow = ({ receiverId, receiver, setSelectedReceiverId }: Props) => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col bg-background/80">
+    <div className="w-full h-full max-h-dvh flex flex-col bg-background/80">
       {/* Header */}
       <div className="flex items-center px-4 py-3 border-b bg-background/80 gap-3">
         <Button
@@ -155,7 +154,14 @@ const ChatWindow = ({ receiverId, receiver, setSelectedReceiverId }: Props) => {
       </div>
 
       {/* Messages Window */}
-      <div className="flex-1 p-4 overflow-y-auto bg-background space-y-2">
+      <div
+        className="flex-1 p-4 overflow-y-auto bg-background space-y-2"
+        ref={(el) => {
+          if (el) {
+            el.scrollTop = el.scrollHeight;
+          }
+        }}
+      >
         {isLoading ? (
           <div className="text-muted-foreground text-sm">Loading...</div>
         ) : allMessages.length === 0 ? (

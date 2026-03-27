@@ -1,7 +1,8 @@
 'use client';
 import { WS_URL } from '@/config/enviroment.config';
-import { authClient } from '@/lib/auth-client';
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+
+if (!WS_URL) throw new Error('web socket server url is not provided');
 
 interface ISocketContext {
   socket: WebSocket | null;
@@ -17,17 +18,10 @@ const useSocketContextValues = (): ISocketContext => {
 
 const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
-  const { data: session } = authClient.useSession();
-  const userId = session?.user?.id;
 
-  const encodedWS_URL = useMemo(() => {
-    if (!userId) return null;
-    return `${WS_URL}?userId=${encodeURIComponent(userId)}`;
-  }, [userId]);
   useEffect(() => {
-    if (!encodedWS_URL) return;
     console.log('Connecting web socket');
-    const ws = new WebSocket(encodedWS_URL);
+    const ws = new WebSocket(WS_URL);
 
     ws.onopen = () => {
       console.log('WebSocket connected');
@@ -38,7 +32,7 @@ const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       ws.close();
       setSocket(null);
     };
-  }, [encodedWS_URL]);
+  }, []);
 
   return (
     <SocketContext.Provider value={{ socket, isConnected: socket?.readyState === WebSocket.OPEN }}>

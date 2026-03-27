@@ -20,7 +20,6 @@ const sendUserStatusUpdate = async (userId: string, statusUpdate: UserStatus) =>
       },
     ],
   });
-  console.log('Sent');
 };
 
 export { userStatusProducer, connectUserStatusProducer, sendUserStatusUpdate };

@@ -20,11 +20,12 @@
   },
   "dependencies": {
     "@types/ws": "^8.18.1",
+    "@workspace/auth": "workspace:*",
     "@workspace/config": "workspace:*",
     "@workspace/db": "workspace:*",
     "dotenv": "^17.2.3",
+    "ioredis": "^5.10.1",
     "kafkajs": "^2.2.4",
-    "redis": "^5.11.0",
     "ws": "^8.19.0"
   }
 }

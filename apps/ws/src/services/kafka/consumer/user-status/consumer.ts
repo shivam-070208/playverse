@@ -1,5 +1,6 @@
-import { kafka } from '../lib/client';
-import { KafkaTopics } from '../utils/kafka-topics';
+import { db } from '@workspace/db';
+import { kafka } from '../../lib/client';
+import { KafkaTopics } from '../../utils/kafka-topics';
 
 const userStatusConsumer = async () => {
   const consumer = kafka.consumer({ groupId: 'user-status-group' });
@@ -14,7 +15,14 @@ const userStatusConsumer = async () => {
 
       try {
         const statusUpdate = JSON.parse(value || '{}');
-        console.log(`[UserStatus][${key}]:`, statusUpdate);
+        await db.user.update({
+          where: {
+            id: key,
+          },
+          data: {
+            status: statusUpdate.status,
+          },
+        });
       } catch (err) {
         console.error(`[UserStatus][${key}] Error parsing message:`, err);
       }

@@ -33,6 +33,7 @@ class ClientManager {
 
   sendMessage(userId: string, data: string | object, senderId?: string) {
     const set = this.clients.get(userId);
+
     if (!set) return false;
     const payload = typeof data === 'string' ? data : JSON.stringify(data);
     for (const socket of set) {
